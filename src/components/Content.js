@@ -3,6 +3,7 @@ import Modal from "./Modal/Modal";
 const taskList = [];
 
 
+
 function onClose (){
     const modalMenu = document.querySelector(".modalMenu")
     const modalBtn = document.querySelector(".plusButton")
@@ -15,8 +16,8 @@ function onClose (){
     modalCloseBtn.onclick = function() {
         modalMenu.style.display = "none";
       }
-    window.addEventListener("click", (e) =>{
-        
+
+    window.addEventListener("click", (e) =>{     
         if (e.target == modalMenu) {
             modalMenu.style.display = "none";
           }
@@ -39,22 +40,57 @@ function onSubmit(){
    
             
             newTask[`${element.name}`] = element.value;
-            console.log(element.value)
-            if(element.value== ''){
-                alert(`${element.name.toUpperCase()} must be filled out`);
+            if(element.value == ''){
+                // alert(`${element.name.toUpperCase()} must be filled out`);
                 completed.push(false)
               } else{
                 completed.push(true)
               }
         });
         if(completed.every((e)=>e  === true)){
-            taskList.push(newTask)
+            if(!localStorage.getItem('taskList')) {
+                localStorage.setItem('taskList', JSON.stringify([newTask]))
+              } else {
+                const arr = JSON.parse(localStorage.getItem('taskList'));
+                localStorage.setItem('taskList', JSON.stringify([...arr, newTask]))
+              }
+            location.reload(); 
         }
-        modalMenu.style.display = "none"
-        console.log(taskList);
+        
     });
     
 };
+
+function render(root){
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "contentBox";
+    const itemLists = [...JSON.parse(localStorage.getItem('taskList'))];
+    console.log(itemLists);
+    for(let items of itemLists){
+        const itemsDiv = document.createElement("div");    
+        itemsDiv.className = "itemBox";
+       
+
+        for(let keys of Object.keys(items)){ 
+            const objectDiv = document.createElement("div");
+            const keyDiv = document.createElement("div");
+            const valuesDiv = document.createElement("div");
+            keyDiv.className = `keys ${keys}`
+            valuesDiv.className = `values ${keys}`
+            console.log(itemLists)
+            keyDiv.innerText = keys;
+            valuesDiv.innerText = items[keys];
+
+            objectDiv.append(keyDiv, valuesDiv);
+            itemsDiv.appendChild(objectDiv);
+        }
+        contentDiv.appendChild(itemsDiv);
+    }
+    
+    
+    root.appendChild(contentDiv);
+}
+
 
 function Contents(){
 
@@ -62,7 +98,7 @@ function Contents(){
     root.appendChild(Modal());
     onClose();
     onSubmit();
-    console.log(taskList);
+    render(root);
 }
 
 export default Contents;

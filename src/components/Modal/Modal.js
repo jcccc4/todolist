@@ -45,7 +45,7 @@ function Modal(){
         if(items === 'Title' || items === 'Description' ){
             divInput.type = "text";
         } else if(items == 'Date'){
-            divInput.type = 'datetime-local'
+            divInput.type = 'date'
         } 
         // else if(items === 'Priority' || items === 'Project'){
 
