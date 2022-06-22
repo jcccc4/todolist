@@ -143,3 +143,6 @@ body {font-family: Arial, Helvetica, sans-serif;}
   display: flex;
   min-height: calc(100vh - 60px);
 }
+.objAttribute{
+  display: flex;
+}

@@ -24,71 +24,72 @@ function onClose (){
     })
 }
 
-function onSubmit(){
-    const newTask = {}
-    let completed = [];
-
-    const modalMenu = document.querySelector(".modalMenu")
-    const form = document.querySelector("form")
-    const formItems = document.querySelectorAll("input")
-    console.log(form);
-    console.log(formItems);
-    form.addEventListener('submit', (event) => {
-        // stop form submission
-        event.preventDefault();
-        formItems.forEach(element => {
-   
-            
-            newTask[`${element.name}`] = element.value;
-            if(element.value == ''){
-                // alert(`${element.name.toUpperCase()} must be filled out`);
-                completed.push(false)
-              } else{
-                completed.push(true)
-              }
-        });
-        if(completed.every((e)=>e  === true)){
-            if(!localStorage.getItem('taskList')) {
-                localStorage.setItem('taskList', JSON.stringify([newTask]))
-              } else {
-                const arr = JSON.parse(localStorage.getItem('taskList'));
-                localStorage.setItem('taskList', JSON.stringify([...arr, newTask]))
-              }
-            location.reload(); 
-        }
+const contentItems = {
+    contentDiv : document.createElement('div'),
+    state: {
+        arrItems: [],
+    },
+    template(items){
         
-    });
-    
-};
-
-function render(root){
-    const contentDiv = document.createElement("div");
-    contentDiv.className = "contentBox";
-    const itemLists = [...JSON.parse(localStorage.getItem('taskList'))];
-    console.log(itemLists);
-    for(let items of itemLists){
-        const itemsDiv = document.createElement("div");    
-        itemsDiv.className = "itemBox";
-       
-
-        for(let keys of Object.keys(items)){ 
-            const objectDiv = document.createElement("div");
-            const keyDiv = document.createElement("div");
-            const valuesDiv = document.createElement("div");
-            keyDiv.className = `keys ${keys}`
-            valuesDiv.className = `values ${keys}`
-            console.log(itemLists)
-            keyDiv.innerText = keys;
-            valuesDiv.innerText = items[keys];
-
-            objectDiv.append(keyDiv, valuesDiv);
-            itemsDiv.appendChild(objectDiv);
+        if(items.length == 0 ){
+            return "<div class = 'noneBox' >Nothing To Display</div>"
         }
-        contentDiv.appendChild(itemsDiv);
-    }
-    
-    
-    root.appendChild(contentDiv);
+        function objItem(obj){
+            let words = ""
+            Object.keys(obj).map((key) =>{
+                    words += `  <div class = "objAttribute">
+                                    <div class = "${key}">${key} </div>: 
+                                    <div class = "${key} ${obj[key]}">${obj[key]} 
+                                </div></div>`
+                } 
+            )
+            return `<div class = "objContainer">${words}</div>`
+        }
+        return (`${items.map(obj => {
+
+                return objItem(obj)})}`)
+    },
+    initialize(root){
+
+        this.contentDiv.className = 'contentBox';
+        if(!localStorage.getItem('taskList')) {
+            localStorage.setItem('taskList', JSON.stringify([]))
+          }
+        this.state.arrItems = JSON.parse(localStorage.getItem('taskList'));
+        
+        root.appendChild(this.contentDiv)
+       
+        document.querySelector('.contentBox').innerHTML = this.template(this.state.arrItems).split(",").join('');
+        document.querySelector("form").addEventListener("submit", (e) => this.onSubmit(e) );
+        
+    },
+    onSubmit(event){
+
+        const formItems = document.querySelectorAll("input");
+        const modalMenu = document.querySelector(".modalMenu")
+        event.preventDefault();
+        const newTask = {};
+        const completed = [];
+        formItems.forEach(element => {
+                        newTask[`${element.name}`] = element.value;
+                        if(element.value == ''){
+                            // alert(`${element.name.toUpperCase()} must be filled out`);
+                            completed.push(false)
+                          } else{
+                            completed.push(true)
+                          }
+                    });
+        if(completed.every((e)=>e  === true)){
+            this.state.arrItems.push(newTask);
+            modalMenu.style.display = "none";
+            localStorage.setItem('taskList', JSON.stringify(this.state.arrItems))
+        };
+        this.updateUI();      
+    },
+    updateUI(){
+        document.querySelector('.contentBox').innerHTML = this.template(this.state.arrItems).split(",").join(''); 
+      }
+
 }
 
 
@@ -97,8 +98,11 @@ function Contents(){
     const root = document.querySelector('#root');   
     root.appendChild(Modal());
     onClose();
-    onSubmit();
-    render(root);
+    
+    contentItems.initialize(root);
+    // onSubmit();
+    // render(root);
+    
 }
 
 export default Contents;
