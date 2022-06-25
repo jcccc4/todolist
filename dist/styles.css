@@ -146,3 +146,43 @@ body {font-family: Arial, Helvetica, sans-serif;}
 .objAttribute{
   display: flex;
 }
+.sides{
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.sides:hover{
+  cursor: pointer;
+  background-color: rebeccapurple;
+}
+.sides:active{
+  cursor: pointer;
+  background-color: royalblue;
+}
+.on{
+  background-color: pink;
+}
+.projectSide{
+  height: 40px;
+
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.projectList{
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-direction: column;
+}
+.sideTitle{
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
